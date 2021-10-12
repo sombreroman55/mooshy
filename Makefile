@@ -1,8 +1,9 @@
 TARGET_EXEC := mooshy
 
 BUILD_DIR := ./build
+INC_DIRS := ./include
 SRC_DIRS := ./src
-LIBS := -lGL -lGLEW -lglfw
+LIBS := -lGL -lglfw -lX11 -lpthread -lXi -ldl
 LDLIBS += $(LIBS)
 CXXFLAGS += -ggdb
 CFLAGS += -ggdb
@@ -20,7 +21,8 @@ OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
 # Every folder in ./src will need to be passed to GCC so that it can find header files
-INC_DIRS := $(shell find $(SRC_DIRS) -type d)
+INC_DIRS += $(shell find $(SRC_DIRS) -type d)
+
 # Add a prefix to INC_DIRS. So moduleA would become -ImoduleA. GCC understands this -I flag
 INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
