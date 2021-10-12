@@ -1,9 +1,10 @@
 TARGET_EXEC := mooshy
 
+CC := g++
 BUILD_DIR := ./build
 INC_DIRS := ./include
 SRC_DIRS := ./src
-LIBS := -lGL -lglfw -lX11 -lpthread -lXi -ldl
+LIBS := -lGL -lglfw -lX11 -lpthread -lXi -ldl -lm
 LDLIBS += $(LIBS)
 CXXFLAGS += -ggdb
 CFLAGS += -ggdb
