@@ -6,7 +6,7 @@
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
-#include "../include/shader.hh"
+#include "shader.hh"
 
 #define WINDOW_WIDTH  1280
 #define WINDOW_HEIGHT  720
@@ -36,9 +36,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 float vertices[] =
 {
-   0.5f, -0.5f, 0.0f, 1.0, 0.0, 0.0,
-  -0.5f, -0.5f, 0.0f, 0.0, 1.0, 0.0,
-   0.0f,  0.5f, 0.0f, 0.0, 0.0, 1.0
+   0.5f, -0.5f, 0.0f, /* 1.0, 0.0, 0.0, */
+  -0.5f, -0.5f, 0.0f, /* 0.0, 1.0, 0.0, */
+   0.0f,  0.5f, 0.0f  /* 0.0, 0.0, 1.0 */
 };
 
 int main()
@@ -77,15 +77,21 @@ int main()
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
 
+  /*
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
+  */
 
-  glBindVertexArray(0);
+  // glBindVertexArray(0);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glBindVertexArray(VAO);
 
+  int colors[3] = {0x7F, 0, 0}; // r, g, b
+  int section = 0;
+  int colorMask = 0x7F;
   while (!glfwWindowShouldClose(window))
   {
     processInput(window);
@@ -94,11 +100,20 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT);
 
     testShader.use();
-    glBindVertexArray(VAO);
+    int rainbowColorLocation = glGetUniformLocation(testShader.id, "rainbowColor");
+    float r = (float)colors[2] / (float)colorMask;
+    float g = (float)colors[1] / (float)colorMask;
+    float b = (float)colors[0] / (float)colorMask;
+
+    printf("%f %f %f\n", r, g, b);
+    glUniform4f(rainbowColorLocation, r, g, b, 1.0);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
+    int nextSection = (section + 1) % 3;
+    colors[section]--; colors[nextSection]++;
+    if (colors[section] == 0) { section++; section %= 3; }
   }
 
   glDeleteVertexArrays(1, &VAO);

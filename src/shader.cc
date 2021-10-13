@@ -4,7 +4,7 @@
  *
  */
 
-#include "../include/shader.hh"
+#include "shader.hh"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
